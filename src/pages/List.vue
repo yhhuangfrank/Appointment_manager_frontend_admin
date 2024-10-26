@@ -40,9 +40,62 @@
           <td>{{ h.hosName }}</td>
           <td>{{ h.hosCode }}</td>
           <td>{{ h.status === 1 ? "可用" : "不可用" }}</td>
+          <td>
+            <button
+              type="button"
+              class="btn btn-danger"
+              data-bs-toggle="modal"
+              :data-bs-target="'#modal-' + idx"
+            >
+              刪除
+            </button>
+          </td>
         </tr>
       </tbody>
     </table>
+    <div
+      v-for="(h, idx) in data"
+      :key="idx"
+      class="modal fade"
+      :id="'modal-' + idx"
+      tabindex="-1"
+      aria-labelledby="exampleModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="exampleModalLabel">
+              Notification
+            </h1>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">It will be deleted. Are you sure?</div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              data-bs-dismiss="modal"
+            >
+              No
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger"
+              @click="deleteByIdAndReder(h.id)"
+              data-bs-dismiss="modal"
+            >
+              Yes
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- pagination -->
@@ -58,7 +111,7 @@
         <button
           class="page-link"
           :class="{ active: currentPage == n }"
-          @click="search(n, limit)"
+          @click="searchByCondition(n)"
         >
           {{ n }}
         </button>
@@ -92,21 +145,27 @@ let searchObj = reactive({
   hosName: "",
   hosCode: "",
 });
-const { pagination, search } = useHopsiptal();
+const { pagination, search, removeById } = useHopsiptal();
 const { currentPage, data, totalPages } = toRefs(pagination);
 
 function prevPage() {
   if (currentPage.value === 1) return;
-  search(currentPage.value - 1, limit.value, null);
+  search(currentPage.value - 1, limit.value, searchObj);
 }
 
 function nextPage() {
   if (currentPage.value === totalPages.value) return;
-  search(currentPage.value + 1, limit.value, null);
+  search(currentPage.value + 1, limit.value, searchObj);
 }
 
-function searchByCondition() {
-  search(currentPage.value, limit.value, searchObj);
+// default search first page
+function searchByCondition(page: number = 1) {
+  search(page, limit.value, searchObj);
+}
+
+async function deleteByIdAndReder(id: number) {
+  await removeById(id);
+  searchByCondition();
 }
 </script>
 

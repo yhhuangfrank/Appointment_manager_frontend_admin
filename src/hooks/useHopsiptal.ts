@@ -22,7 +22,6 @@ export default function () {
   async function search(page: number, limit: number, request: any) {
     let res;
     if (request) {
-      console.log(request);
       res = await axios.post(`${BASE_URL}/search/${page}/${limit}`, request);
     } else {
       res = await axios.post(`${BASE_URL}/search/${page}/${limit}`);
@@ -35,13 +34,16 @@ export default function () {
       totalPages,
       data: content,
     });
+  }
 
-    return pagination;
+  async function removeById(id: number) {
+    await axios.delete(`${BASE_URL}/${id}`);
   }
 
   onMounted(() => {
+    // default search, page = 1
     search(1, 2, null);
   });
 
-  return { pagination, search };
+  return { pagination, search, removeById };
 }
