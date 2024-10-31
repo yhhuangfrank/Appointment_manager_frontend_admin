@@ -10,7 +10,7 @@
           aria-expanded="true"
           aria-controls="collapseOne"
         >
-          醫院
+          Hopsital
         </button>
       </h2>
       <div
@@ -22,7 +22,13 @@
           class="accordion-body d-grid btn text-start"
           @click="showHosList()"
         >
-          醫院列表
+          Hospital list
+        </div>
+        <div
+          class="accordion-body d-grid btn text-start"
+          @click="showAddForm()"
+        >
+          Add a hosptial
         </div>
       </div>
     </div>
@@ -93,9 +99,16 @@
 import { useRouter } from "vue-router";
 
 const router = useRouter();
+
 function showHosList() {
   router.push({
-    path: "/hostpital/list",
+    path: "/hospital/list",
+  });
+}
+
+function showAddForm() {
+  router.push({
+    path: "/hospital/add",
   });
 }
 </script>

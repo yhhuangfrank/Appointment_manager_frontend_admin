@@ -1,5 +1,5 @@
 import axios from "axios";
-import { onMounted, reactive } from "vue";
+import { reactive } from "vue";
 import { Hospital } from "../types/Hostpital";
 import { Pagination } from "../types/Pagination";
 
@@ -11,13 +11,6 @@ export default function () {
     data: [],
     totalPages: 0,
   });
-
-  // async function getList() {
-  //   const result = await axios.get(`${BASE_URL}/all`);
-  //   result.data.data.forEach((h: Hospital) => {
-  //     list.push(h);
-  //   });
-  // }
 
   async function search(page: number, limit: number, request: any) {
     let res;
@@ -40,10 +33,25 @@ export default function () {
     await axios.delete(`${BASE_URL}/${id}`);
   }
 
-  onMounted(() => {
-    // default search, page = 1
-    search(1, 2, null);
-  });
+  async function updateStatus(id: number, status: number) {
+    await axios.put(`${BASE_URL}/update/${id}/${status}`);
+  }
 
-  return { pagination, search, removeById };
+  async function saveHospital(hospital: any) {
+    await axios.post(`${BASE_URL}/`, hospital);
+  }
+
+  async function getHospital(id: number) {
+    const res = await axios.get(`${BASE_URL}/${id}`);
+    return res.data.data;
+  }
+
+  return {
+    pagination,
+    search,
+    removeById,
+    updateStatus,
+    saveHospital,
+    getHospital,
+  };
 }

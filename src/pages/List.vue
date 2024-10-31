@@ -5,7 +5,7 @@
         <input
           type="text"
           class="form-control"
-          placeholder="名稱"
+          placeholder="Name"
           v-model="searchObj.hosName"
         />
       </div>
@@ -13,14 +13,12 @@
         <input
           type="text"
           class="form-control"
-          placeholder="編號"
+          placeholder="Code"
           v-model="searchObj.hosCode"
         />
       </div>
       <div class="m-2">
-        <button class="btn btn-success" @click="searchByCondition()">
-          Search
-        </button>
+        <button class="btn btn-success" @click="searchHandler()">Search</button>
       </div>
     </div>
   </div>
@@ -29,9 +27,9 @@
       <thead>
         <tr>
           <th scope="col">#</th>
-          <th scope="col">醫院名稱</th>
-          <th scope="col">代號</th>
-          <th scope="col">狀態</th>
+          <th scope="col">Name</th>
+          <th scope="col">Code</th>
+          <th scope="col">Status</th>
         </tr>
       </thead>
       <tbody>
@@ -39,70 +37,50 @@
           <th scope="row">{{ idx + 1 }}</th>
           <td>{{ h.hosName }}</td>
           <td>{{ h.hosCode }}</td>
-          <td>{{ h.status === 1 ? "可用" : "不可用" }}</td>
+          <td>{{ h.status === 1 ? "Available" : "Unavailable" }}</td>
           <td>
             <button
               type="button"
-              class="btn btn-danger"
+              class="btn btn-danger mx-2"
               data-bs-toggle="modal"
               :data-bs-target="'#modal-' + idx"
             >
-              刪除
+              Delete
+            </button>
+            <button
+              v-if="h.status === 1"
+              type="button"
+              class="btn btn-primary mx-2"
+              @click="updateStatusHandler(h.id, 0)"
+            >
+              Lock
+            </button>
+            <button
+              v-else
+              type="button"
+              class="btn btn-secondary mx-2"
+              @click="updateStatusHandler(h.id, 1)"
+            >
+              Unlock
+            </button>
+            <button
+              type="button"
+              class="btn btn-info mx-2"
+              @click="editHandler(h.id)"
+            >
+              Edit
             </button>
           </td>
         </tr>
       </tbody>
     </table>
-    <div
-      v-for="(h, idx) in data"
-      :key="idx"
-      class="modal fade"
-      :id="'modal-' + idx"
-      tabindex="-1"
-      aria-labelledby="exampleModalLabel"
-      aria-hidden="true"
-    >
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h1 class="modal-title fs-5" id="exampleModalLabel">
-              Notification
-            </h1>
-            <button
-              type="button"
-              class="btn-close"
-              data-bs-dismiss="modal"
-              aria-label="Close"
-            ></button>
-          </div>
-          <div class="modal-body">It will be deleted. Are you sure?</div>
-          <div class="modal-footer">
-            <button
-              type="button"
-              class="btn btn-secondary"
-              data-bs-dismiss="modal"
-            >
-              No
-            </button>
-            <button
-              type="button"
-              class="btn btn-danger"
-              @click="deleteByIdAndReder(h.id)"
-              data-bs-dismiss="modal"
-            >
-              Yes
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
   </div>
 
   <!-- pagination -->
   <nav aria-label="...">
     <ul class="pagination justify-content-center">
       <li class="page-item" :class="{ disabled: currentPage == 1 }">
-        <button class="page-link" @click="prevPage()">
+        <button class="page-link" @click="prevPageHandler()">
           <span aria-hidden="true">&laquo;</span>
         </button>
       </li>
@@ -111,7 +89,7 @@
         <button
           class="page-link"
           :class="{ active: currentPage == n }"
-          @click="searchByCondition(n)"
+          @click="searchHandler(n)"
         >
           {{ n }}
         </button>
@@ -121,13 +99,56 @@
         <button
           class="page-link"
           :class="{ disabled: currentPage == totalPages }"
-          @click="nextPage()"
+          @click="nextPageHandler()"
         >
           <span aria-hidden="true">&raquo;</span>
         </button>
       </li>
     </ul>
   </nav>
+
+  <!-- Modal -->
+  <div
+    v-for="(h, idx) in data"
+    :key="idx"
+    class="modal fade"
+    :id="'modal-' + idx"
+    tabindex="-1"
+    aria-labelledby="exampleModalLabel"
+    aria-hidden="true"
+  >
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel">Notification</h1>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">It will be deleted. Are you sure?</div>
+        <div class="modal-footer">
+          <button
+            type="button"
+            class="btn btn-secondary"
+            data-bs-dismiss="modal"
+          >
+            No
+          </button>
+          <button
+            type="button"
+            class="btn btn-danger"
+            @click="deleteHandler(h.id)"
+            data-bs-dismiss="modal"
+          >
+            Yes
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -137,36 +158,60 @@ export default {
 </script>
 
 <script lang="ts" setup>
-import { reactive, ref, toRefs } from "vue";
+import { reactive, ref, toRefs, onMounted } from "vue";
+import { useRouter } from "vue-router";
 import useHopsiptal from "../hooks/useHopsiptal";
 
+const router = useRouter();
 const limit = ref(2);
 let searchObj = reactive({
   hosName: "",
   hosCode: "",
 });
-const { pagination, search, removeById } = useHopsiptal();
+const { pagination, search, removeById, updateStatus } = useHopsiptal();
 const { currentPage, data, totalPages } = toRefs(pagination);
 
-function prevPage() {
+function prevPageHandler() {
   if (currentPage.value === 1) return;
   search(currentPage.value - 1, limit.value, searchObj);
 }
 
-function nextPage() {
+function nextPageHandler() {
   if (currentPage.value === totalPages.value) return;
   search(currentPage.value + 1, limit.value, searchObj);
 }
 
 // default search first page
-function searchByCondition(page: number = 1) {
+function searchHandler(page: number = 1) {
   search(page, limit.value, searchObj);
 }
 
-async function deleteByIdAndReder(id: number) {
+async function deleteHandler(id: number) {
   await removeById(id);
-  searchByCondition();
+  searchHandler();
 }
+
+function updateStatusHandler(id: number, status: number) {
+  data.value.forEach((h) => {
+    if (h.id === id) {
+      h.status = status;
+    }
+  });
+
+  updateStatus(id, status);
+}
+
+function editHandler(id: number) {
+  router.push({
+    name: "edit_hospital",
+    params: { id },
+  });
+}
+
+onMounted(() => {
+  // default search, page = 1
+  search(1, 2, null);
+});
 </script>
 
 <style scoped>

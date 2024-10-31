@@ -5,7 +5,7 @@
       <Menu />
     </div>
     <div class="col-9">
-      <RouterView></RouterView>
+      <RouterView :key="$route.fullPath"></RouterView>
     </div>
   </div>
 </template>

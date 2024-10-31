@@ -1,7 +1,7 @@
 <template>
   <nav class="navbar" style="background-color: #e3f2fd">
     <div class="container-fluid">
-      <a class="navbar-brand" href="#">後台系統</a>
+      <a class="navbar-brand" href="#">DashBoard</a>
       <button
         class="navbar-toggler"
         type="button"
