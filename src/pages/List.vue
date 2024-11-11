@@ -186,12 +186,12 @@ function searchHandler(page: number = 1) {
   search(page, limit.value, searchObj);
 }
 
-async function deleteHandler(id: number) {
+async function deleteHandler(id: string) {
   await removeById(id);
   searchHandler();
 }
 
-function updateStatusHandler(id: number, status: number) {
+function updateStatusHandler(id: string, status: number) {
   data.value.forEach((h) => {
     if (h.id === id) {
       h.status = status;
@@ -201,7 +201,7 @@ function updateStatusHandler(id: number, status: number) {
   updateStatus(id, status);
 }
 
-function editHandler(id: number) {
+function editHandler(id: string) {
   router.push({
     name: "edit_hospital",
     params: { id },

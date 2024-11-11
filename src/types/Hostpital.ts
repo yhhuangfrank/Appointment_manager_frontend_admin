@@ -1,5 +1,5 @@
 export interface Hospital {
-  id: number;
+  id: string;
   hosName: string;
   hosCode: string;
   status: number;

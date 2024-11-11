@@ -3,7 +3,7 @@ import { reactive } from "vue";
 import { Hospital } from "../types/Hostpital";
 import { Pagination } from "../types/Pagination";
 
-const BASE_URL = "http://localhost:8201/admin/hosp/hospitalSettings";
+const BASE_URL = "http://localhost:8201/admin/hospitals";
 
 export default function () {
   const pagination: Pagination<Hospital> = reactive({
@@ -29,11 +29,11 @@ export default function () {
     });
   }
 
-  async function removeById(id: number) {
+  async function removeById(id: string) {
     await axios.delete(`${BASE_URL}/${id}`);
   }
 
-  async function updateStatus(id: number, status: number) {
+  async function updateStatus(id: string, status: number) {
     await axios.put(`${BASE_URL}/update/${id}/${status}`);
   }
 
@@ -41,7 +41,7 @@ export default function () {
     await axios.post(`${BASE_URL}/`, hospital);
   }
 
-  async function getHospital(id: number) {
+  async function getHospitalById(id: string) {
     const res = await axios.get(`${BASE_URL}/${id}`);
     return res.data.data;
   }
@@ -52,6 +52,6 @@ export default function () {
     removeById,
     updateStatus,
     saveHospital,
-    getHospital,
+    getHospitalById,
   };
 }
