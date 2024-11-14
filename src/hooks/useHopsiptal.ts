@@ -46,6 +46,11 @@ export default function () {
     return res.data.data;
   }
 
+  async function getAllHosIdAndName() {
+    const res = await axios.get(`${BASE_URL}/all/names`);
+    return res.data.data;
+  }
+
   return {
     pagination,
     search,
@@ -53,5 +58,6 @@ export default function () {
     updateStatus,
     saveHospital,
     getHospitalById,
+    getAllHosIdAndName,
   };
 }
