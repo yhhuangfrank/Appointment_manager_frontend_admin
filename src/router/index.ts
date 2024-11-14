@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import List from "../pages/List.vue";
 import Save from "../pages/Save.vue";
 import Common from "../pages/Common.vue";
+import Schedule from "../pages/Schedule.vue";
 
 const router = createRouter({
   history: createWebHistory(),
@@ -23,6 +24,10 @@ const router = createRouter({
     {
       path: "/cmn",
       component: Common,
+    },
+    {
+      path: "/schedule",
+      component: Schedule,
     },
   ],
 });
