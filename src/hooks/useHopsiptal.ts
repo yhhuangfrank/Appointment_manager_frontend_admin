@@ -3,7 +3,7 @@ import { reactive } from "vue";
 import { Hospital } from "../types/Hostpital";
 import { Pagination } from "../types/Pagination";
 
-const BASE_URL = "http://localhost:8201/admin/hospitals";
+const BASE_URL = "http://localhost/admin/hosp";
 
 export default function () {
   const pagination: Pagination<Hospital> = reactive({

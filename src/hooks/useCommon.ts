@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8202/admin/cmn/dict";
+const BASE_URL = "http://localhost/admin/cmn/dict";
 
 export default function () {
   async function getCommonData(id: number) {

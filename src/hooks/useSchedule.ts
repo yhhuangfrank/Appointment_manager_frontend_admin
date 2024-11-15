@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:8201/admin/hosp/schedule";
+const BASE_URL = "http://localhost/admin/hosp/schedule";
 
 export default function () {
   async function getScheduleByHosCode(

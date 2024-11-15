@@ -29,6 +29,7 @@
           <th scope="col">#</th>
           <th scope="col">Name</th>
           <th scope="col">Code</th>
+          <th scope="col">Level</th>
           <th scope="col">Status</th>
         </tr>
       </thead>
@@ -37,6 +38,7 @@
           <th scope="row">{{ idx + 1 }}</th>
           <td>{{ h.hosName }}</td>
           <td>{{ h.hosCode }}</td>
+          <td>{{ h.level }}</td>
           <td>{{ h.status === 1 ? "Available" : "Unavailable" }}</td>
           <td>
             <button
