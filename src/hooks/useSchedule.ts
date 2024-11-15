@@ -14,7 +14,18 @@ export default function () {
     return res.data.data;
   }
 
+  async function getDetailByHosCodeAndWorkDate(
+    hosCode: string,
+    workDate: string
+  ) {
+    const res = await axios.get(
+      `${BASE_URL}/getScheduleDetail/${hosCode}/${workDate}`
+    );
+    return res.data.data;
+  }
+
   return {
     getScheduleByHosCode,
+    getDetailByHosCodeAndWorkDate,
   };
 }

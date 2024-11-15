@@ -1,6 +1,6 @@
 <template>
   <!-- pagination -->
-  <nav v-show="dataList.length" aria-label="..." class="my-2">
+  <nav v-show="scheduleList.length" aria-label="..." class="my-2">
     <ul class="pagination">
       <li class="page-item" :class="{ disabled: currentPage === 1 }">
         <button
@@ -33,7 +33,12 @@
     </ul>
   </nav>
 
-  <div v-for="data in dataList" class="card" style="width: 18rem">
+  <div
+    v-for="data in scheduleList"
+    class="card"
+    style="width: 18rem"
+    @click="clickHandler(hosCode, data.workDate)"
+  >
     <div class="card-body">
       <h5 class="card-title">{{ data.workDate }}-{{ data.dayOfWeek }}</h5>
       <p class="card-text">
@@ -42,22 +47,50 @@
       <span># doctors: {{ data.docCount }}</span>
     </div>
   </div>
+
+  <div v-show="detailList.length" class="mt-2">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Name</th>
+          <th scope="col">AvailableCount</th>
+          <th scope="col">MaxCount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr v-for="(detail, idx) in detailList" :key="idx">
+          <th scope="row">{{ idx + 1 }}</th>
+          <td>
+            {{ detail.docName }}
+          </td>
+          <td>
+            {{ detail.availableCount }}
+          </td>
+          <td>
+            {{ detail.maxCount }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script lang="ts">
 export default {
-  name: "ScheduleDay",
+  name: "ScheduleInfo",
 };
 </script>
 
 <script lang="ts" setup>
 defineProps([
   "hosCode",
-  "limit",
   "currentPage",
   "totalPages",
-  "dataList",
+  "scheduleList",
   "searchByPage",
+  "clickHandler",
+  "detailList",
 ]);
 </script>
 
@@ -66,5 +99,8 @@ defineProps([
   --bs-pagination-border-radius: 50%;
   --bs-pagination-active-bg: skyblue;
   --bs-pagination-border-color: none;
+}
+.card {
+  cursor: pointer;
 }
 </style>

@@ -14,13 +14,14 @@
       </div>
     </div>
     <div class="col-8 mx-auto">
-      <ScheduleDate
+      <ScheduleInfo
         :hosCode="currentHosCode"
         :currentPage="currentPage"
         :totalPages="totalPages"
-        :limit="limit"
-        :dataList="dataList"
+        :scheduleList="scheduleList"
         :searchByPage="changeScheduleDatesByCode"
+        :clickHandler="getScheduleDetail"
+        :detailList="scheduleDetailList"
       />
     </div>
   </div>
@@ -35,38 +36,64 @@ export default {
 <script lang="ts" setup>
 import { onMounted, reactive, ref } from "vue";
 import useHopsiptal from "../hooks/useHopsiptal";
-import useScheduleDetail from "../hooks/useSchedule";
+import useSchedule from "../hooks/useSchedule";
 import { Hospital } from "../types/Hostpital";
-import ScheduleDate from "../components/ScheduleDate.vue";
+import ScheduleInfo from "../components/ScheduleInfo.vue";
 import { ScheduleRule } from "../types/ScheduleRule";
+import { ScheduleDetail } from "../types/ScheduleDetail";
 
 const hosList: Hospital[] = reactive([]);
 let currentHosCode = ref("hosCode");
 let hosName = ref("");
 let currentPage = ref(1);
 let totalPages = ref(0);
-let dataList: ScheduleRule[] = reactive([]);
-let limit = ref(1);
+let scheduleList: ScheduleRule[] = reactive([]);
+let scheduleDetailList: ScheduleDetail[] = reactive([]);
+// let limit = ref(1);
 const { getAllHosIdAndName } = useHopsiptal();
-const { getScheduleByHosCode } = useScheduleDetail();
+const { getScheduleByHosCode, getDetailByHosCodeAndWorkDate } = useSchedule();
 
-async function changeScheduleDatesByCode(code: string, page: number = 1) {
+async function changeScheduleDatesByCode(
+  code: string,
+  page: number = 1,
+  limit: number = 1
+) {
   currentHosCode.value = code;
-  const res = await getScheduleByHosCode(page, limit.value, code);
+  const res = await getScheduleByHosCode(page, limit, code);
   totalPages.value =
-    res.total % limit.value === 0
-      ? Math.floor(res.total / limit.value)
-      : Math.floor(res.total / limit.value) + 1;
+    res.total % limit === 0
+      ? Math.floor(res.total / limit)
+      : Math.floor(res.total / limit) + 1;
   hosName = res.hosName;
   currentPage.value = page;
-  dataList = [];
-  res.scheduleRuleList.forEach((sr: ScheduleRule) => dataList.push(sr));
+  clearSchedule();
+  clearScheduleDetail();
+  res.scheduleRuleList.forEach((sr: ScheduleRule) => scheduleList.push(sr));
+}
+
+async function getScheduleDetail(hosCode: string, workDate: string) {
+  const res = await getDetailByHosCodeAndWorkDate(hosCode, workDate);
+  clearScheduleDetail();
+  res.forEach((sd: ScheduleDetail) => scheduleDetailList.push(sd));
+}
+
+function clearSchedule() {
+  for (let i = 0; i <= scheduleList.length; i++) {
+    scheduleList.pop();
+  }
+}
+
+function clearScheduleDetail() {
+  for (let i = 0; i <= scheduleDetailList.length; i++) {
+    scheduleDetailList.pop();
+  }
 }
 
 onMounted(async () => {
   const res = await getAllHosIdAndName();
   res.forEach((hos: Hospital) => hosList.push(hos));
   await changeScheduleDatesByCode(hosList[0].hosCode);
+  await getScheduleDetail(hosList[0].hosCode, scheduleList[0].workDate);
 });
 </script>
 
